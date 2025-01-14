@@ -21,4 +21,4 @@ function data() {
 
 session.train(data, 3000);
 
-display(brain, ["A", "B"], ["AND", "OR", "XOR", "NOT"], 0, 1);
+display(brain, ["AND", "OR", "XOR", "NOT"], 0, 1);

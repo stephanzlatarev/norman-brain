@@ -10,7 +10,7 @@ export default class Conceptron extends Neuron {
   // Positive perceptrons. The conceptron activates when at least one positive pereptron activates
   positive = new Set();
 
-  // Negative perceprons. These do not activate the perceptron. They limit the positive perceptrons.
+  // Negative perceptrons. These do not activate the perceptron. They limit the positive perceptrons.
   negative = new Set();
 
   constructor(concept, neurons) {
@@ -23,22 +23,16 @@ export default class Conceptron extends Neuron {
     this.negative.add(new Perceptron(this.neurons.map(neuron => new Axis(true, -Infinity, Infinity, true))));
   }
 
-  process() {
-    for (const perceptron of this.positive) {
-      perceptron.process(this.neurons);
-    }
-    for (const perceptron of this.negative) {
-      perceptron.process(this.neurons);
-    }
-
-    for (const perceptron of this.positive) {
-      if (perceptron.activation) {
-        this.activation = 1;
-        return;
+  perceptron(inputs) {
+    for (const perceptron of [...this.positive, ...this.negative]) {
+      if (perceptron.covers(inputs)) {
+        return perceptron;
       }
     }
+  }
 
-    this.activation = 0;
+  process() {
+    this.activation = this.perceptron(this.neurons.map(neuron => neuron.activation)).positive ? 1 : 0;
   }
 
 }

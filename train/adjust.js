@@ -3,46 +3,24 @@ import split from "./split.js";
 
 // Adjusts the perceptrons to produce the given activation for the given inputs
 export default function adjustConceptron(conceptron, inputs, activation) {
-  const positive = findPerceptron(conceptron.positive, inputs);
-  const negative = findPerceptron(conceptron.negative, inputs);
+  const perceptron = conceptron.perceptron(inputs);
+  if (!perceptron) throw new Error("ERROR: Conceptron " + conceptron.label + " fault on input " + inputs.join());
 
-  let transformed = false;
+  if (!!perceptron.positive === !!activation) {
+    adjustPerceptron(perceptron, inputs);
 
-  if (!positive === !negative) {
-    throw new Error("ERROR: Conceptron " + conceptron.label + " fault on input " + inputs.join());
+    // The conceptron is not transformed
+    return false;
   }
 
-  if (activation) {
-    if (positive) {
-      adjustPerceptron(positive, inputs);
-    } else if (canSplitPerceptron(negative, inputs)) {
-      splitPerceptron(conceptron, negative, inputs);
-      transformed = true;
-    } else {
-      convertPerceptron(conceptron, negative, inputs);
-      transformed = true;
-    }
+  if (canSplitPerceptron(perceptron, inputs)) {
+    splitPerceptron(conceptron, perceptron, inputs);
   } else {
-    if (negative) {
-      adjustPerceptron(negative, inputs);
-    } else if (canSplitPerceptron(positive, inputs)) {
-      splitPerceptron(conceptron, positive, inputs);
-      transformed = true;
-    } else {
-      convertPerceptron(conceptron, positive, inputs);
-      transformed = true;
-    }
+    convertPerceptron(conceptron, perceptron, inputs);
   }
 
-  return transformed;
-}
-
-function findPerceptron(perceptrons, inputs) {
-  for (const perceptron of perceptrons) {
-    if (perceptron.get(inputs)) {
-      return perceptron;
-    }
-  }
+  // The conceptron is transformed
+  return true;
 }
 
 function canSplitPerceptron(perceptron, inputs) {

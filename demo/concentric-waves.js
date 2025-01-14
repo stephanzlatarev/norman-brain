@@ -24,4 +24,4 @@ function data() {
 
 session.train(data, 3000);
 
-display(brain, ["x", "y"], ["Wave"], 0, 1);
+display(brain, ["Wave"], 0, 1);

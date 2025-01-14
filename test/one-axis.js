@@ -138,7 +138,7 @@ function assertOneActivation(conceptron, perceptrons, label, input, expected) {
   let activated;
 
   for (const perceptron of perceptrons) {
-    if (perceptron.get([input])) {
+    if (perceptron.covers([input])) {
       if (activated) {
         fail("More than one perceptron activate for", label);
       } else {

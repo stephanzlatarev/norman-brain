@@ -11,13 +11,9 @@ export default class Perceptron {
     this.label = "#" + (ids++);
   }
 
-  process(neurons) {
-    this.activation = this.get(neurons.map(neuron => neuron.activation));
-  }
-
-  get(inputs) {
+  covers(inputs) {
     for (let i = 0; i < this.axis.length; i++) {
-      if (!this.axis[i].get(inputs[i])) {
+      if (!this.axis[i].contains(inputs[i])) {
         return false;
       }
     }
