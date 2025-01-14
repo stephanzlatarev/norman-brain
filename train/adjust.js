@@ -6,7 +6,7 @@ export default function adjustConceptron(conceptron, inputs, activation) {
   const perceptron = conceptron.perceptron(inputs);
   if (!perceptron) throw new Error("ERROR: Conceptron " + conceptron.label + " fault on input " + inputs.join());
 
-  if (!!perceptron.positive === !!activation) {
+  if (perceptron.activation === activation) {
     adjustPerceptron(perceptron, inputs);
 
     // The conceptron is not transformed
@@ -14,12 +14,12 @@ export default function adjustConceptron(conceptron, inputs, activation) {
   }
 
   if (canSplitPerceptron(perceptron, inputs)) {
-    splitPerceptron(conceptron, perceptron, inputs);
+    splitPerceptron(conceptron, perceptron, inputs, activation);
   } else {
-    convertPerceptron(conceptron, perceptron, inputs);
+    convertPerceptron(conceptron, perceptron, inputs, activation);
   }
 
-  // The conceptron is transformed
+  // The conceptron is either split or converted
   return true;
 }
 
@@ -47,23 +47,15 @@ function adjustPerceptron(perceptron, inputs) {
   }
 }
 
-function convertPerceptron(conceptron, perceptron, inputs) {
-  if (perceptron.positive) {
-    perceptron.positive = false;
-    conceptron.negative.add(perceptron);
-    conceptron.positive.delete(perceptron);
-  } else {
-    perceptron.positive = true;
-    conceptron.positive.add(perceptron);
-    conceptron.negative.delete(perceptron);
-  }
+function convertPerceptron(conceptron, perceptron, inputs, activation) {
+  perceptron.activation = activation;
 
   adjustPerceptron(perceptron, inputs);
   merge(conceptron, [perceptron]);
 }
 
-function splitPerceptron(conceptron, perceptron, inputs) {
-  const siblings = split(conceptron, perceptron, inputs);
+function splitPerceptron(conceptron, perceptron, inputs, activation) {
+  const siblings = split(conceptron, perceptron, inputs, activation);
 
   merge(conceptron, siblings);
 }

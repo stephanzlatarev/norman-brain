@@ -3,11 +3,12 @@ let ids = 1;
 
 export default class Perceptron {
 
-  positive = false;
-  axis = [];
+  activation;
+  axis;
 
-  constructor(axis) {
-    this.axis = axis;
+  constructor(activation, axis) {
+    this.activation = activation;
+    this.axis = axis || [];
     this.label = "#" + (ids++);
   }
 

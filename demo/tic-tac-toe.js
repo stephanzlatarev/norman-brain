@@ -143,9 +143,9 @@ let conceptrons = 0;
 let perceptrons = 0;
 for (const layer of brain.layers) {
   for (const neuron of layer.values()) {
-    if (neuron.positive) {
+    if (neuron.perceptrons) {
       conceptrons++;
-      perceptrons += neuron.positive.size;
+      perceptrons += neuron.perceptrons.size;
     }
   }
 }

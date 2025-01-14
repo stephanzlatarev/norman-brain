@@ -14,11 +14,7 @@ export default function merge(conceptron, perceptrons) {
       const dissolved = mergeOne(perceptron);
 
       if (dissolved) {
-        if (dissolved.positive) {
-          conceptron.positive.delete(dissolved);
-        } else {
-          conceptron.negative.delete(dissolved);
-        }
+        conceptron.perceptrons.delete(dissolved);
 
         for (const neighbor of neighbors) {
           next.add(neighbor);
@@ -86,7 +82,7 @@ function mergeOneIntoManyAtMaxSide(perceptron, neighbors, axisIndex) {
 }
 
 function isSameType(perceptron, neighbors) {
-  return !!neighbors.length && !neighbors.find(neighbor => (neighbor.positive !== perceptron.positive));
+  return !!neighbors.length && !neighbors.find(neighbor => (neighbor.activation !== perceptron.activation));
 }
 
 function isSameSurface(perceptron, neighbors, axisIndex) {

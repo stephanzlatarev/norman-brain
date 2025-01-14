@@ -121,23 +121,21 @@ function assertEquals(actual, expected, ...message) {
 }
 
 function assertActivations(conceptron, positive, negative, activations) {
-  assertEquals(conceptron.positive.size, positive, "Number of positive perceptrons don't match");
-  assertEquals(conceptron.negative.size, negative, "Number of negative perceptrons don't match");
+  assertEquals(conceptron.perceptrons.size, positive + negative, "Number of perceptrons don't match");
+  assertEquals([...conceptron.perceptrons].filter(perceptron => !!perceptron.activation).length, positive, "Number of positive perceptrons don't match");
+  assertEquals([...conceptron.perceptrons].filter(perceptron => !perceptron.activation).length, negative, "Number of negative perceptrons don't match");
 
-  const perceptrons = [...conceptron.positive, ...conceptron.negative];
-  assertEquals(perceptrons.length, positive + negative, "Number of perceptrons don't match");
-
-  assertOneActivation(conceptron, perceptrons, "-∞", -Number.MAX_VALUE, !!activations[0]);
+  assertOneActivation(conceptron, "-∞", -Number.MAX_VALUE, !!activations[0]);
   for (let i = 0; i < activations.length; i++) {
-    assertOneActivation(conceptron, perceptrons, i, i, !!activations[i]);
+    assertOneActivation(conceptron, i, i, !!activations[i]);
   }
-  assertOneActivation(conceptron, perceptrons, "∞", Number.MAX_VALUE, !!activations[activations.length - 1]);
+  assertOneActivation(conceptron, "∞", Number.MAX_VALUE, !!activations[activations.length - 1]);
 }
 
-function assertOneActivation(conceptron, perceptrons, label, input, expected) {
+function assertOneActivation(conceptron, label, input, expected) {
   let activated;
 
-  for (const perceptron of perceptrons) {
+  for (const perceptron of conceptron.perceptrons) {
     if (perceptron.covers([input])) {
       if (activated) {
         fail("More than one perceptron activate for", label);
@@ -149,7 +147,7 @@ function assertOneActivation(conceptron, perceptrons, label, input, expected) {
 
   if (!activated) {
     fail("No perceptron activates for", label);
-  } else if (conceptron.positive.has(activated) !== !!expected) {
+  } else if (!!activated.activation !== !!expected) {
     fail("Wrong perceptron activates for", label);
   }
 }

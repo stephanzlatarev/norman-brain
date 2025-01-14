@@ -3,18 +3,13 @@ import Perceptron from "../brain/perceptron.js";
 import { updateNeighborsOnTwoWaySplit, updateNeighborsOnThreeWaySplit } from "./neighbors.js";
 
 // Splits the perceptron of the given conceptron at the given input. Returns all split parts.
-export default function splitPerceptron(conceptron, perceptron, inputs) {
+export default function splitPerceptron(conceptron, perceptron, inputs, activation) {
   const { index, side } = findSplitAxisIndex(perceptron, inputs);
   const input = inputs[index];
   const sibling = clonePerceptron(perceptron, inputs);
 
-  if (perceptron.positive) {
-    sibling.positive = false;
-    conceptron.negative.add(sibling);
-  } else {
-    sibling.positive = true;
-    conceptron.positive.add(sibling);
-  }
+  sibling.activation = activation;
+  conceptron.perceptrons.add(sibling);
 
   if (side < 0) {
     const minPerceptron = sibling;
@@ -61,13 +56,7 @@ export default function splitPerceptron(conceptron, perceptron, inputs) {
     const midPerceptronAxis = midPerceptron.axis[index];
     const maxPerceptronAxis = maxPerceptron.axis[index];
 
-    if (perceptron.positive) {
-      maxPerceptron.positive = true;
-      conceptron.positive.add(maxPerceptron);
-    } else {
-      maxPerceptron.positive = false;
-      conceptron.negative.add(maxPerceptron);
-    }
+    conceptron.perceptrons.add(maxPerceptron);
 
     minPerceptronAxis.max = input;
     minPerceptronAxis.maxInclusive = false;
@@ -157,7 +146,7 @@ function findSplitAxisIndex(perceptron, inputs) {
 }
 
 function clonePerceptron(perceptron, inputs) {
-  const clone = new Perceptron(perceptron.axis.map(one => new Axis(one.minInclusive, one.min, one.max, one.maxInclusive)));
+  const clone = new Perceptron(perceptron.activation, perceptron.axis.map(one => new Axis(one.minInclusive, one.min, one.max, one.maxInclusive)));
 
   for (let i = 0; i < perceptron.axis.length; i++) {
     const axis = perceptron.axis[i];

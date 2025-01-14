@@ -74,7 +74,9 @@ function conceptrons(brain, inputs, outputs) {
   }
 
   for (const conceptron of list) {
-    prepareConceptronForTraining(conceptron);
+    for (const perceptron of conceptron.perceptrons) {
+      updateNeighborsOnCreate(perceptron);
+    }
   }
 
   return list;
@@ -84,18 +86,4 @@ function feed(session, input) {
   for (let i = 0; i < input.length; i++) {
     session.sensors[i].activation = input[i];
   }
-}
-
-function prepareConceptronForTraining(conceptron) {
-  for (const perceptron of conceptron.positive) {
-    preparePerceptronForTraining(perceptron);
-  }
-
-  for (const perceptron of conceptron.negative) {
-    preparePerceptronForTraining(perceptron);
-  }
-}
-
-function preparePerceptronForTraining(perceptron) {
-  updateNeighborsOnCreate(perceptron);
 }

@@ -26,7 +26,7 @@ export default function(brain, concepts, min, max) {
       for (let x = 0; x <= DISPLAY_SIZE; x++) {
         const perceptron = conceptron.perceptron([value(x, min, max), value(y, min, max)]);
 
-        line.push(id(perceptron.positive ? "#" : "-", perceptron.label.slice(1)));
+        line.push(id(perceptron.activation ? "#" : "-", perceptron.label.slice(1)));
       }
 
       console.log(line.join(" "));

@@ -178,31 +178,29 @@ function assertEquals(actual, expected, ...message) {
 }
 
 function assertActivations(conceptron, positive, negative, activations) {
-  assertEquals(conceptron.positive.size, positive, "Number of positive perceptrons don't match");
-  assertEquals(conceptron.negative.size, negative, "Number of negative perceptrons don't match");
+  assertEquals(conceptron.perceptrons.size, positive + negative, "Number of perceptrons don't match");
+  assertEquals([...conceptron.perceptrons].filter(perceptron => !!perceptron.activation).length, positive, "Number of positive perceptrons don't match");
+  assertEquals([...conceptron.perceptrons].filter(perceptron => !perceptron.activation).length, negative, "Number of negative perceptrons don't match");
 
-  const perceptrons = [...conceptron.positive, ...conceptron.negative];
-  assertEquals(perceptrons.length, positive + negative, "Number of perceptrons don't match");
-
-  assertRowActivation(conceptron, perceptrons, "-∞", -Number.MAX_VALUE, activations[0]);
+  assertRowActivation(conceptron, "-∞", -Number.MAX_VALUE, activations[0]);
   for (let y = 0; y < activations.length; y++) {
-    assertRowActivation(conceptron, perceptrons, y, y, activations[y]);
+    assertRowActivation(conceptron, y, y, activations[y]);
   }
-  assertRowActivation(conceptron, perceptrons, "∞", Number.MAX_VALUE, activations[activations.length - 1]);
+  assertRowActivation(conceptron, "∞", Number.MAX_VALUE, activations[activations.length - 1]);
 }
 
-function assertRowActivation(conceptron, perceptrons, label, y, row) {
-  assertOneActivation(conceptron, perceptrons, "-∞:" + label, -Number.MAX_VALUE, y, !!row[0]);
+function assertRowActivation(conceptron, label, y, row) {
+  assertOneActivation(conceptron, "-∞:" + label, -Number.MAX_VALUE, y, !!row[0]);
   for (let x = 0; x < row.length; x++) {
-    assertOneActivation(conceptron, perceptrons, x + ":" + label, x, y, !!row[x]);
+    assertOneActivation(conceptron, x + ":" + label, x, y, !!row[x]);
   }
-  assertOneActivation(conceptron, perceptrons, "∞:" + label, Number.MAX_VALUE, y, !!row[row.length - 1]);
+  assertOneActivation(conceptron, "∞:" + label, Number.MAX_VALUE, y, !!row[row.length - 1]);
 }
 
-function assertOneActivation(conceptron, perceptrons, label, x, y, expected) {
+function assertOneActivation(conceptron, label, x, y, expected) {
   let activated;
 
-  for (const perceptron of perceptrons) {
+  for (const perceptron of conceptron.perceptrons) {
     if (perceptron.covers([x, y])) {
       if (activated) {
         fail("More than one perceptron activate for", label);
@@ -214,8 +212,7 @@ function assertOneActivation(conceptron, perceptrons, label, x, y, expected) {
 
   if (!activated) {
     fail("No perceptron activates for", label);
-  } else if (conceptron.positive.has(activated) !== !!expected) {
-    console.log("WRONG:", label, "=", x, y, "->", activated);
+  } else if (!!activated.activation !== !!expected) {
     fail("Wrong perceptron activates for", label);
   }
 }

@@ -85,12 +85,9 @@ function checkPerceptrons(brain) {
 }
 
 function checkConceptron(conceptron) {
-  if (!conceptron.positive) failConceptron(conceptron, "has no positive perceptrons!");
-  if (!conceptron.negative) failConceptron(conceptron, "has no negative perceptrons!");
+  if (!conceptron.perceptrons) failConceptron(conceptron, "has no perceptrons!");
 
-  const perceptrons = [...conceptron.positive, ...conceptron.negative];
-
-  if (!perceptrons.length) failConceptron(conceptron, "has no perceptrons!");
+  const perceptrons = [...conceptron.perceptrons];
 
   for (const perceptron of perceptrons) {
     if (perceptron.axis.length !== conceptron.neurons.length) failPerceptronAxis(conceptron, perceptron, "count doesn't match!");

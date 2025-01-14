@@ -1,22 +1,28 @@
 
 export function conceptronToString(conceptron) {
   const text = [conceptron.label, ":"];
+  const activations = new Set([...conceptron.perceptrons].map(perceptron => perceptron.activation));
 
   for (const neuron of conceptron.neurons) {
     text.push(neuron.label);
   }
 
-  text.push("\r\n" + conceptron.positive.size, "positive perceptrons:");
-  for (const perceptron of conceptron.positive) {
-    text.push("\r\n ");
-    text.push(perceptronToString(perceptron));
+  for (const activation of activations) {
+    const perceptrons = [];
+
+    for (const perceptron of conceptron.perceptrons) {
+      if (perceptron.activation === activation) {
+        perceptrons.push(perceptron);
+      }
+    }
+
+    text.push("\r\n" + perceptrons.length, "\"" + activation + "\"", (perceptrons.length === 1) ? "perceptron:" : "perceptrons:");
+    for (const perceptron of perceptrons) {
+      text.push("\r\n ");
+      text.push(perceptronToString(perceptron));
+    }
   }
 
-  text.push("\r\n" + conceptron.negative.size, "negative perceptrons:");
-  for (const perceptron of conceptron.negative) {
-    text.push("\r\n ");
-    text.push(perceptronToString(perceptron));
-  }
   text.push("\r\n");
 
   return text.join(" ");
@@ -25,7 +31,7 @@ export function conceptronToString(conceptron) {
 export function perceptronToString(perceptron) {
   if (!perceptron) return "-";
 
-  return (perceptron.positive ? "+" : "-") + " " + perceptron.label + ": " +
+  return (perceptron.activation ? "+" : "-") + " " + perceptron.label + ": " +
     perceptron.axis.map(axis => (
       "<" + axis.minNeighbors.map(one => one.label).join(",") + "> " +
       axisToString(axis) +
