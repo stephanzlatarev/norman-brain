@@ -6,9 +6,9 @@ import { conceptronToString } from "../train/text.js";
 
 const tests = {
 
-  // The entire interval is initally negative
-  "{} => [-∞, +∞]=0" : function(conceptron) {
-    assertActivations(conceptron, 0, 1, [0, 0, 0]);
+  // The entire interval is initally undefined
+  "{} => [-∞, +∞]=undefined" : function(conceptron) {
+    assertActivations(conceptron, 0, 1, [undefined, undefined, undefined]);
   },
 
   // Negative samples only keep the entire interval negative
@@ -101,6 +101,18 @@ const tests = {
     assertActivations(conceptron, 1, 2, [0, 0, 0, 1, 0, 0, 0]);
   },
 
+  // Alternative activations by enumeration
+  "{1=A, 2=B, 3=C} => [-∞, 2)=A, [2, 2]=B, (2, +∞]=C" : function(conceptron) {
+    activate(conceptron, [1, "A"], [2, "B"], [3, "C"]);
+    assertActivations(conceptron, 3, 0, ["A", "A", "B", "C", "C"]);
+  },
+
+  // Square root by enumeration
+  "{0=0, 1=1, 3=1, 4=2, 8=2, 9=3} => [-∞, 1)=0, [1, 4)=1, [4, 9)=2, [9, +∞]=3" : function(conceptron) {
+    activate(conceptron, [0, 0], [1, 1], [3, 1], [4, 2], [8, 2], [9, 3]);
+    assertActivations(conceptron, 3, 1, [0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3]);
+  },
+
 };
 
 function activate(conceptron, ...samples) {
@@ -125,11 +137,11 @@ function assertActivations(conceptron, positive, negative, activations) {
   assertEquals([...conceptron.perceptrons].filter(perceptron => !!perceptron.activation).length, positive, "Number of positive perceptrons don't match");
   assertEquals([...conceptron.perceptrons].filter(perceptron => !perceptron.activation).length, negative, "Number of negative perceptrons don't match");
 
-  assertOneActivation(conceptron, "-∞", -Number.MAX_VALUE, !!activations[0]);
+  assertOneActivation(conceptron, "-∞", -Number.MAX_VALUE, activations[0]);
   for (let i = 0; i < activations.length; i++) {
-    assertOneActivation(conceptron, i, i, !!activations[i]);
+    assertOneActivation(conceptron, i, i, activations[i]);
   }
-  assertOneActivation(conceptron, "∞", Number.MAX_VALUE, !!activations[activations.length - 1]);
+  assertOneActivation(conceptron, "∞", Number.MAX_VALUE, activations[activations.length - 1]);
 }
 
 function assertOneActivation(conceptron, label, input, expected) {
@@ -147,7 +159,7 @@ function assertOneActivation(conceptron, label, input, expected) {
 
   if (!activated) {
     fail("No perceptron activates for", label);
-  } else if (!!activated.activation !== !!expected) {
+  } else if (activated.activation !== expected) {
     fail("Wrong perceptron activates for", label);
   }
 }

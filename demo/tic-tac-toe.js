@@ -68,10 +68,10 @@ async function takeHumanTurn(board) {
   return selection;
 }
 
-const BOARD_SENSORS = ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"];
-const PLAY_CONCEPTS = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9"];
+const BOARD_SENSORS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const PLAY_CONCEPT = "O";
 const brain = new Brain();
-const session = new Session(brain, BOARD_SENSORS, PLAY_CONCEPTS);
+const session = new Session(brain, BOARD_SENSORS, [PLAY_CONCEPT]);
 
 const trainingBoard = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 
@@ -101,7 +101,7 @@ function train() {
       // Center is free.
       if ((human === 1) && (norman === 0)) {
         // Place my first piece there.
-        return { input: trainingBoard, output: [0, 0, 0, 0, 1, 0, 0, 0, 0] };
+        return { input: trainingBoard, output: [4] };
       }
     } else {
       // Center is taken.
@@ -114,16 +114,12 @@ function train() {
 
           future[i] = 0;
           if (win(future) === 0) {
-            const output = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-            output[i] = 1;
-            return { input: trainingBoard, output };
+            return { input: trainingBoard, output: [i] };
           }
 
           future[i] = 1;
           if (win(future) === 1) {
-            const output = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-            output[i] = 1;
-            return { input: trainingBoard, output };
+            return { input: trainingBoard, output: [i] };
           }
         }
       }
@@ -159,19 +155,14 @@ function takeNormanTurn(board) {
 
   brain.process();
 
-  const moves = [];
-  for (let i = 0; i < board.length; i++) {
-    moves.push({ index: i, activation: brain.get(PLAY_CONCEPTS[i]).activation });
-  }
-  moves.sort((a, b) => (b.activation - a.activation));
+  const move = brain.get(PLAY_CONCEPT).activation;
 
-  console.log("norman is thinking about", moves.map(one => (one.index + 1)).join(", ") + "...");
-
-  for (const move of moves) {
-    if (board[move.index] < 0) {
-      board[move.index] = 1;
-      return move.index;
-    }
+  if (board[move] < 0) {
+    board[move] = 1;
+    return move;
+  } else {
+    console.log("norman tries an invalid play at", (move + 1));
+    process.exit(1);
   }
 }
 

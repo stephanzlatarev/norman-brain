@@ -190,11 +190,11 @@ function assertActivations(conceptron, positive, negative, activations) {
 }
 
 function assertRowActivation(conceptron, label, y, row) {
-  assertOneActivation(conceptron, "-∞:" + label, -Number.MAX_VALUE, y, !!row[0]);
+  assertOneActivation(conceptron, "-∞:" + label, -Number.MAX_VALUE, y, row[0]);
   for (let x = 0; x < row.length; x++) {
-    assertOneActivation(conceptron, x + ":" + label, x, y, !!row[x]);
+    assertOneActivation(conceptron, x + ":" + label, x, y, row[x]);
   }
-  assertOneActivation(conceptron, "∞:" + label, Number.MAX_VALUE, y, !!row[row.length - 1]);
+  assertOneActivation(conceptron, "∞:" + label, Number.MAX_VALUE, y, row[row.length - 1]);
 }
 
 function assertOneActivation(conceptron, label, x, y, expected) {
@@ -212,7 +212,7 @@ function assertOneActivation(conceptron, label, x, y, expected) {
 
   if (!activated) {
     fail("No perceptron activates for", label);
-  } else if (!!activated.activation !== !!expected) {
+  } else if (activated.activation !== expected) {
     fail("Wrong perceptron activates for", label);
   }
 }

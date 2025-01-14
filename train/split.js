@@ -146,7 +146,7 @@ function findSplitAxisIndex(perceptron, inputs) {
 }
 
 function clonePerceptron(perceptron, inputs) {
-  const clone = new Perceptron(perceptron.activation, perceptron.axis.map(one => new Axis(one.minInclusive, one.min, one.max, one.maxInclusive)));
+  const clone = new Perceptron(perceptron.axis.map(one => new Axis(one.minInclusive, one.min, one.max, one.maxInclusive)), perceptron.activation);
 
   for (let i = 0; i < perceptron.axis.length; i++) {
     const axis = perceptron.axis[i];

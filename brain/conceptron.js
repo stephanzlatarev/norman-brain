@@ -17,7 +17,7 @@ export default class Conceptron extends Neuron {
       this.neurons.push(neuron);
     }
 
-    this.perceptrons.add(new Perceptron(false, this.neurons.map(neuron => new Axis(true, -Infinity, Infinity, true))));
+    this.perceptrons.add(new Perceptron(this.neurons.map(neuron => new Axis(true, -Infinity, Infinity, true))));
   }
 
   perceptron(inputs) {

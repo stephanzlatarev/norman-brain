@@ -6,7 +6,7 @@ export default class Perceptron {
   activation;
   axis;
 
-  constructor(activation, axis) {
+  constructor(axis, activation) {
     this.activation = activation;
     this.axis = axis || [];
     this.label = "#" + (ids++);
